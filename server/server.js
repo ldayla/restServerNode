@@ -1,6 +1,9 @@
 require('./config/config')
 const express = require('express')
 const app = express()
+
+const mongoose = require('mongoose');
+
 var bodyParser = require('body-parser')
 
 // parse application/x-www-form-urlencoded
@@ -9,30 +12,17 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+//aqui importamos y usamos las rutas de los usuarios
+app.use(require('./routes/usuarios'))
 
-app.get('/', function(req, res) {
-    res.json('esta es una peticion get')
-})
-
-app.post('/usuario', function(req, res) {
-    let body = req.body
-    if (body.nombre === undefined) {
-        res.status(400).json({
-            ok: false,
-            mensaje: "el nombre es necerio"
-        })
-    } else {
-        res.json({ body })
-    }
-
-})
-app.put('/', function(req, res) {
-    let id = req.params.id
-    res.json({ id })
-})
-app.delete('/usuario/:id', function(req, res) {
-
-})
+//conectar con la base de datos a trabes de mongoose 
+mongoose.connect(process.env.URLBD, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true
+    }).then((resp) => { console.log('Connected to Mongo!!'); })
+    .catch(err => console.log(err))
 
 app.listen(process.env.PORT, () => {
     console.log("escuchando el puerto:", 3000);
