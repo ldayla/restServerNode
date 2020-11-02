@@ -11,11 +11,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
-
-//aqui importamos y usamos las rutas de los usuarios
-app.use(require('./routes/usuarios'))
-
-//conectar con la base de datos a trabes de mongoose 
+    //configuracion global de las rutas
+app.use(require('./routes/index'))
+    //conectar con la base de datos a trabes de mongoose 
 mongoose.connect(process.env.URLBD, {
         useNewUrlParser: true,
         useUnifiedTopology: true,

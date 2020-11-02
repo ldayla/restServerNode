@@ -8,6 +8,16 @@ process.env.PORT = process.env.PORT || 3000;
 process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
 //===============
+//caducidad del token
+//===============
+process.env.CADUCIDAD_TOKEN = '720h' //(60 * 60 * 24 * 30);
+
+//===============
+//SEDD SEMILLA O SECRETO DEL TOKEN
+//===============
+process.env.SECRETO = process.env.SECRETO || 'sercreto-del-token';
+
+//===============
 // base de datos
 //===============
 let urlBD;

@@ -4,11 +4,14 @@ const bcrypt = require('bcrypt');
 
 const _ = require('underscore')
 
-const Usuario = require('../models/usuario')
+const Usuario = require('../models/usuario');
+const { verificaToke, verificaRole } = require('../middleware/autenticacion');
 
 const app = express()
     // hacemos una paginacion a los usuario
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToke, function(req, res) {
+
+
     let desde = req.query.desde || 0 // para si no me envia el paramatro desde le ponemos que comience por la pagina 0
     let limite = req.query.limite || 5;
     limite = Number(limite)
@@ -38,7 +41,7 @@ app.get('/usuario', function(req, res) {
 
 })
 
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificaToke, verificaRole], function(req, res) {
         let body = req.body
         let usuario = new Usuario({
             nombre: body.nombre,
@@ -66,7 +69,7 @@ app.post('/usuario', function(req, res) {
 
     })
     //put es la actualizacion del registro
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', verificaToke, function(req, res) {
     let id = req.params.id
         // el metodo pick de underscore nos devuelve un objetos filtrando o mostrando solo los elementeos que le pasamos en el arreglo y asi de esta forma evitamos
         // que el update nos actualicen datos que no queremos como en este caso el google o password
@@ -85,6 +88,15 @@ app.put('/usuario/:id', function(req, res) {
             })
         }
 
+        if (!usuarioDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'ese user no existe en la d'
+                }
+            })
+        }
+
         res.json({
             ok: true,
             usuario: usuarioDB
@@ -93,7 +105,7 @@ app.put('/usuario/:id', function(req, res) {
     })
 })
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', verificaToke, function(req, res) {
     let id = req.params.id;
     // de esta manera eliminamos fisicamente de la bd el usuario
     /* Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
