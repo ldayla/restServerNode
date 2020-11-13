@@ -97,6 +97,7 @@ app.post('/google', async(req, res) => { //hacemos por en google
         //console.log(`este es el token de google, ${token.idtoken}`);
     let googleUser = await verify(token) // aqui verificamos el token con la funcion de google y si es correcto voy a tener un objeto 
         .catch(e => { // llamado googleUser con la informacion del usuario
+            console.log("el token no escorrecto");
             return res.status(403).json({
                 ok: false,
                 message: "error el token de google no es correcto",
@@ -104,7 +105,7 @@ app.post('/google', async(req, res) => { //hacemos por en google
             })
         })
 
-    Usuario.find({ email: googleUser.email }, (err, usuarioBD) => { // verifico si en mi bd tengi un user con ese correo
+    Usuario.findOne({ email: googleUser.email }, (err, result) => { // verifico si en mi bd tengi un user con ese correo
 
         if (err) {
             return res.status(500).json({ // porque seria un error del servidor
@@ -113,32 +114,9 @@ app.post('/google', async(req, res) => { //hacemos por en google
             })
         }
 
-        if (usuarioBD) { //si es true es que el usuario ya se ha autenticado
-            if (usuarioBD.google === false) { // si es false el usurio no se ha autenticado por google
-                console.log('user no autenticado pero no en google:' + usuarioBD);
-                return res.status(400).json({
-                    ok: false,
-                    err: {
-                        message: 'debe utilizar autenticacion normal'
-                    }
-                })
-            } else { // como ya  ha sido autenticado por google renuevo su token para que siga trabajando
-                console.log(`usuario autenticado con google: email: ${usuarioBD.nombre}`);
-                let token = jwt.sign({
-                    usuario: usuarioBD
-                }, process.env.SECRETO, { expiresIn: process.env.CADUCIDAD_TOKEN })
+        if (!result) { //si es true es que el usuario ya se ha autenticado
 
-                return res.json({
-                    ok: true,
-                    message: "usuario autenticado por google y token renovado",
-                    usuario: usuarioBD,
-
-                    token
-
-                })
-
-            }
-        } else { // si el usuario no existe en nuestra db
+            console.log("el user no existe");
             let usuario = new Usuario();
             usuario.nombre = googleUser.nombre;
             usuario.email = googleUser.email;
@@ -152,10 +130,32 @@ app.post('/google', async(req, res) => { //hacemos por en google
                         ok: false,
                         err
                     })
-                } else {
-                    console.log("user de google creado en la bd");
                 }
             })
+        } else { // si el usuario no existe en nuestra db
+
+            if (result.google === false) { // si es false el usurio no se ha autenticado por google
+                return res.status(400).json({
+                    ok: false,
+                    err: {
+                        message: 'debe utilizar autenticacion normal'
+                    }
+                })
+            } else { // como ya  ha sido autenticado por google renuevo su token para que siga trabajando
+
+                let token = jwt.sign({
+                    usuario: result
+                }, process.env.SECRETO, { expiresIn: process.env.CADUCIDAD_TOKEN })
+
+                return res.json({
+                    ok: true,
+                    message: "usuario autenticado por google y token renovado",
+                    usuario: result,
+                    token
+
+                })
+
+            }
         }
 
     })
