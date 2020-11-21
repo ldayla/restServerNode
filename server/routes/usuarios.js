@@ -76,7 +76,7 @@ app.put('/usuario/:id', verificaToke, function(req, res) {
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role'])
 
     /* el tercer argumento que le pasamos a la funcion es para que retorne el usuario ya con los cambios,de lo contrario retorna 
-    el usuario encontrado en la bd, el runValidator para que nos corra todas las validaciones definida en el esquema, y asi no hay
+    el usuario encontrado en la bd, el runValidator:true para que nos corra todas las validaciones definida en el esquema, y asi no hay
      pifia  con los update
      new:true => para que devuelva el user ya actualizado
      */

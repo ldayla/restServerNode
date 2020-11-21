@@ -30,12 +30,13 @@ let verificaToke = (req, res, next) => {
 
 let verificaRole = (req, res, next) => {
     let usuario = req.usuario
-    console.log(`usuario ${usuario.role}`);
+    console.log(`usuario_role: ${usuario.role}   usuario: ${usuario.email}`);
     if (usuario.role === 'ADMIN_ROLE') {
         next()
     } else {
         return res.status(400).json({
             ok: false,
+            usuario,
             err: {
                 message: 'nescesita ser admin'
             }
