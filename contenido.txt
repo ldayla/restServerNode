@@ -1,0 +1,6 @@
+//estos paquetes son propios de node  por eso solo los requerimos y no hay que instalarlos
+const fs = require('fs')
+const path = require('path')
+
+// asset se entiende que va a ser una carpeta donde vamos a almacenar recursos estaticos o informacion que ya
+ sea va a ser global ejemplo una imagen por default o estilos

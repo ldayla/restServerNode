@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 
 let verificaToke = (req, res, next) => {
     // req.get() para obtener los header, ya que ahi es donde le estoy enviando el token
-    let token = req.get('token');
+    //con la siguiente expresion verificamos si el token viene por header entonces token = req.get('token')  sino token=req.query.token
+    let token = req.get('token') ? req.get('token') : req.query.token
 
     jwt.verify(token, process.env.SECRETO, (err, decode) => {
         if (err) {
